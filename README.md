@@ -3,7 +3,8 @@
 ## Usage
 
 ```
-go build && ./infor-you-mation-spider  -alsologtostderr=true
+make
+make run
 ```
 
 ## Contact

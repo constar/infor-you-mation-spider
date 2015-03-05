@@ -4,14 +4,16 @@ import (
 	"github.com/yanyiwu/igo"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"time"
 )
 
 type ByrDataItem struct {
-	Id      bson.ObjectId "_id"
-	Title   string
-	Content string
-	Url     string
-	UrlMd5  string
+	Id           bson.ObjectId "_id"
+	Title        string
+	Content      string
+	Url          string
+	UrlMd5       string
+	LastModified time.Time
 }
 
 type MongoClient struct {
@@ -54,6 +56,7 @@ func Insert(
 		content,
 		url,
 		igo.GetMd5String(url),
+		time.Now(),
 	}
 
 	return oid, c.Insert(&bdi)

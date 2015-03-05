@@ -8,6 +8,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 	"strings"
 	"sync"
+	"time"
 )
 
 var dispatcher *KeywordDispatcher
@@ -34,9 +35,10 @@ type KeywordDispatcher struct {
 }
 
 type KeywordColItem struct {
-	Id      bson.ObjectId "_id"
-	Keyword string
-	Feedid  bson.ObjectId
+	Id           bson.ObjectId "_id"
+	Keyword      string
+	Feedid       bson.ObjectId
+	LastModified time.Time
 }
 
 func (kci *KeywordColItem) String() string {
@@ -82,6 +84,7 @@ func (kw *KeywordDispatcher) dispatchOne(keyword string, feedid bson.ObjectId) e
 		bson.NewObjectId(),
 		keyword,
 		feedid,
+		time.Now(),
 	}
 	glog.Infof("insert %s to %s.%s", kci, DBName, KeywordCol)
 	return c.Insert(&kci)
