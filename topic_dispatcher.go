@@ -11,16 +11,20 @@ import (
 	"time"
 )
 
-var dispatcher *KeywordDispatcher
+var dispatcher *TopicDispatcher
 
-func init() {
-	dispatcher = NewKeywordDispatcher()
+func TopicDispatcherInit() {
+	dispatcher = NewTopicDispatcher()
 	if dispatcher == nil {
-		panic("NewKeywordDispatcher failed")
+		panic("NewTopicDispatcher failed")
 	}
-	for i := 0; i < len(Keywords); i++ {
-		k := strings.ToLower(Keywords[i])
-		dispatcher.Insert(k)
+	for i := 0; i < len(gOrTopics); i++ {
+		glog.Info("init: topic ", gOrTopics[i].Topic)
+		for j := 0; j < len(gOrTopics[i].Words); j++ {
+			glog.Info("init: word ", gOrTopics[i].Words[j])
+			k := gOrTopics[i].Words[j]
+			dispatcher.Insert(k, &gOrTopics[i])
+		}
 	}
 }
 
@@ -28,7 +32,7 @@ func Dispatch(text string, feedid bson.ObjectId) {
 	dispatcher.Dispatch(text, feedid)
 }
 
-type KeywordDispatcher struct {
+type TopicDispatcher struct {
 	trie   *igo.Trie
 	lock   sync.RWMutex
 	dbSess *mgo.Session
@@ -45,8 +49,8 @@ func (kci *KeywordColItem) String() string {
 	return fmt.Sprintf("%v %s %v", kci.Id, kci.Keyword, kci.Feedid)
 }
 
-func NewKeywordDispatcher() *KeywordDispatcher {
-	kw := new(KeywordDispatcher)
+func NewTopicDispatcher() *TopicDispatcher {
+	kw := new(TopicDispatcher)
 	kw.trie = igo.NewTrie()
 	var err error
 	kw.dbSess, err = mgo.Dial(MongoDBHost)
@@ -57,34 +61,38 @@ func NewKeywordDispatcher() *KeywordDispatcher {
 	return kw
 }
 
-func (kw *KeywordDispatcher) Insert(word string) {
+func (kw *TopicDispatcher) Insert(word string, ti TopicInterface) {
 	kw.lock.Lock()
 	defer kw.lock.Unlock()
-	if err := kw.trie.Insert(word); err != nil {
+	glog.Info("trie insert word: ", word)
+	if err := kw.trie.Insert(word, ti); err != nil {
 		glog.Error(err)
 	}
 }
 
-func (kw *KeywordDispatcher) Dispatch(text string, feedid bson.ObjectId) {
+func (kw *TopicDispatcher) Dispatch(text string, feedid bson.ObjectId) {
 	kw.lock.RLock()
 	defer kw.lock.RUnlock()
 	text = strings.ToLower(text)
 	res := kw.trie.Find(text)
 	for i := 0; i < len(res); i++ {
-		err := kw.dispatchOne(res[i].Pattern, feedid)
+		interf := res[i].Data.(TopicInterface)
+		err := kw.dispatchOne(interf.GetTopic(), feedid)
 		if err != nil {
 			glog.Info(err)
 		}
 	}
 }
 
-func (kw *KeywordDispatcher) dispatchOne(keyword string, feedid bson.ObjectId) error {
+func (kw *TopicDispatcher) dispatchOne(topic string, feedid bson.ObjectId) error {
 	c := kw.dbSess.DB(DBName).C(KeywordCol)
+	last_modified := time.Now()
+	last_modified = time.Unix(last_modified.Unix()+8*3600, 0)
 	kci := KeywordColItem{
 		bson.NewObjectId(),
-		keyword,
+		topic,
 		feedid,
-		time.Now(),
+		last_modified,
 	}
 	glog.Infof("insert %s to %s.%s", kci, DBName, KeywordCol)
 	return c.Insert(&kci)

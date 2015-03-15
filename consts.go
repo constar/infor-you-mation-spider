@@ -19,19 +19,4 @@ var (
 		"http://www.newsmth.net/nForum/rss/board-Career_Upgrade",
 		"http://www.newsmth.net/nForum/rss/board-ExecutiveSearch",
 	}
-	Keywords = [...]string{
-		"实习",
-		"兼职",
-		"全职",
-		"设计",
-		"前端",
-		"PHP",
-		"机器学习",
-		"Android",
-		"iOS",
-		"C++",
-		"Java",
-		"创业",
-		"产品",
-	}
 )

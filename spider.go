@@ -40,6 +40,7 @@ func spiderRunner(url string) {
 
 func main() {
 	flag.Parse()
+	TopicDispatcherInit()
 	for i := 0; i < len(RssUrls); i++ {
 		url := RssUrls[i]
 		wg.Add(1)

@@ -50,13 +50,15 @@ func Insert(
 	c := connOption.dbSess.DB(connOption.dbName).C(colName)
 
 	oid := bson.NewObjectId()
+	last_modified := time.Now()
+	last_modified = time.Unix(last_modified.Unix()+8*3600, 0)
 	bdi := ByrDataItem{
 		oid,
 		title,
 		content,
 		url,
 		igo.GetMd5String(url),
-		time.Now(),
+		last_modified,
 	}
 
 	return oid, c.Insert(&bdi)
