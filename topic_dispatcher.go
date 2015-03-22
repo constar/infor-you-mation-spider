@@ -62,6 +62,7 @@ func NewTopicDispatcher() *TopicDispatcher {
 }
 
 func (kw *TopicDispatcher) Insert(word string, ti TopicInterface) {
+	word = strings.ToLower(word)
 	kw.lock.Lock()
 	defer kw.lock.Unlock()
 	glog.Info("trie insert word: ", word)
