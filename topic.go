@@ -25,7 +25,7 @@ var gOrTopics = []TopicOr{
 	{"设计", []string{"设计", "交互", "UI", "UE", "美工"}},
 	{"云计算", []string{"云计算", "分布式"}},
 	{"实习/兼职", []string{"实习", "兼职"}},
-	{"Web前端", []string{"前端", "h5", "html"}},
+	{"Web前端", []string{"前端", "h5", "html", "js", "javascript"}},
 	{"创业", []string{"创业"}},
 	{"产品", []string{"产品"}},
 	{"PHP", []string{"PHP"}},

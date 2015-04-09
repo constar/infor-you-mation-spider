@@ -8,12 +8,9 @@ const (
 
 var (
 	RssUrls = [...]string{
-		"http://bbs.byr.cn/rss/board-WorkLife",
-		"http://bbs.byr.cn/rss/board-Advertising",
 		"http://bbs.byr.cn/rss/board-ParttimeJob",
 		"http://bbs.byr.cn/rss/board-JobInfo",
 		"http://www.newsmth.net/nForum/rss/board-Career_Campus",
-		"http://www.newsmth.net/nForum/rss/board-Career_Investment",
 		"http://www.newsmth.net/nForum/rss/board-Career_PHD",
 		"http://www.newsmth.net/nForum/rss/board-Career_Plaza",
 		"http://www.newsmth.net/nForum/rss/board-Career_Upgrade",
