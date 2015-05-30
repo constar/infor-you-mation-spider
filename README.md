@@ -7,12 +7,10 @@ make
 make run
 ```
 
-## Mongo Database Record
+## Create Mongo Index
 
 ```
-db.keyword.ensureIndex({"lastmodified":-1})
-db.feeds.ensureIndex({"urlmd5":1},{"unique":true})
-db.keyword.ensureIndex({"keyword":1, "feedid":1},{"unique":true})
+mongo < mongo_index.js
 ```
 
 ## Contact
