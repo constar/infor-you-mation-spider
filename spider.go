@@ -26,6 +26,13 @@ func spiderRunner(url string) {
 		} else {
 			for _, item := range msgs {
 				glog.V(3).Info(item)
+				j := Job{
+					item.GetTitle(),
+					item.GetContent(),
+					item.GetUrl(),
+					igo.GetMd5String(item.GetUrl()),
+				}
+				SaveJob(j)
 				//oid, err := Insert("feeds", item.GetTitle(), item.GetContent(), item.GetUrl())
 				//if err == nil {
 				//	glog.Info(item.GetTitle(), " ", item.GetUrl())
