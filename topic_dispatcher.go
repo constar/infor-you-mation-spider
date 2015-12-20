@@ -2,13 +2,13 @@ package main
 
 import (
 	"fmt"
-	"github.com/golang/glog"
-	"github.com/yanyiwu/igo"
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/golang/glog"
+	"github.com/yanyiwu/igo"
+	"gopkg.in/mgo.v2/bson"
 )
 
 var dispatcher *TopicDispatcher
@@ -33,9 +33,9 @@ func Dispatch(text string, feedid bson.ObjectId) {
 }
 
 type TopicDispatcher struct {
-	trie   *igo.Trie
-	lock   sync.RWMutex
-	dbSess *mgo.Session
+	trie *igo.Trie
+	lock sync.RWMutex
+	//dbSess *mgo.Session
 }
 
 type KeywordColItem struct {
@@ -52,12 +52,12 @@ func (kci *KeywordColItem) String() string {
 func NewTopicDispatcher() *TopicDispatcher {
 	kw := new(TopicDispatcher)
 	kw.trie = igo.NewTrie()
-	var err error
-	kw.dbSess, err = mgo.Dial(MongoDBHost)
-	if err != nil {
-		glog.Error(err)
-		return nil
-	}
+	//var err error
+	//kw.dbSess, err = mgo.Dial(MongoDBHost)
+	//if err != nil {
+	//	glog.Error(err)
+	//	return nil
+	//}
 	return kw
 }
 
@@ -86,7 +86,7 @@ func (kw *TopicDispatcher) Dispatch(text string, feedid bson.ObjectId) {
 }
 
 func (kw *TopicDispatcher) dispatchOne(topic string, feedid bson.ObjectId) error {
-	c := kw.dbSess.DB(DBName).C(KeywordCol)
+	//c := kw.dbSess.DB(DBName).C(KeywordCol)
 	last_modified := time.Now()
 	last_modified = time.Unix(last_modified.Unix()+8*3600, 0)
 	kci := KeywordColItem{
@@ -96,5 +96,7 @@ func (kw *TopicDispatcher) dispatchOne(topic string, feedid bson.ObjectId) error
 		last_modified,
 	}
 	glog.Infof("insert %s to %s.%s", kci, DBName, KeywordCol)
-	return c.Insert(&kci)
+	//TODO
+	return nil
+	//return c.Insert(&kci)
 }

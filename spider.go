@@ -2,10 +2,11 @@ package main
 
 import (
 	"flag"
-	"github.com/golang/glog"
-	"github.com/yanyiwu/igo"
 	"sync"
 	"time"
+
+	"github.com/golang/glog"
+	"github.com/yanyiwu/igo"
 )
 
 const (
@@ -24,13 +25,14 @@ func spiderRunner(url string) {
 			glog.Error("Parse failed")
 		} else {
 			for _, item := range msgs {
-				oid, err := Insert("feeds", item.GetTitle(), item.GetContent(), item.GetUrl())
-				if err == nil {
-					glog.Info(item.GetTitle(), " ", item.GetUrl())
-					Dispatch(item.GetTitle(), oid)
-				} else {
-					glog.V(2).Info(err)
-				}
+				glog.V(3).Info(item)
+				//oid, err := Insert("feeds", item.GetTitle(), item.GetContent(), item.GetUrl())
+				//if err == nil {
+				//	glog.Info(item.GetTitle(), " ", item.GetUrl())
+				//	Dispatch(item.GetTitle(), oid)
+				//} else {
+				//	glog.V(2).Info(err)
+				//}
 			}
 		}
 		glog.V(3).Info("time.Sleep ", SleepSeconds, " seconds")
