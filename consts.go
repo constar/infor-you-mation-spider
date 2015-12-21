@@ -1,10 +1,10 @@
 package main
 
-const (
-	MongoDBHost = "127.0.0.1"
-	DBName      = "inforyoumation"
-	KeywordCol  = "keyword"
-)
+//const (
+//	MongoDBHost = "127.0.0.1"
+//	DBName      = "inforyoumation"
+//	KeywordCol  = "keyword"
+//)
 
 var (
 	RssUrls = [...]string{

@@ -1,24 +1,11 @@
 package main
 
-type TopicInterface interface {
-	GetTopic() string
-}
-
-type TopicOr struct {
-	Topic string
+type Topic struct {
+	Name  string
 	Words []string
 }
 
-func (this TopicOr) GetTopic() string {
-	return this.Topic
-}
-
-//type TopicAnd struct {
-//	Topic string
-//	Words []string
-//}
-
-var gOrTopics = []TopicOr{
+var TOPICS = []Topic{
 	{"Android", []string{"Android", "安卓"}},
 	{"大数据", []string{"大数据", "数据挖掘", "数据分析"}},
 	{"人工智能", []string{"人工智能", "机器学习", "自然语言处理"}},

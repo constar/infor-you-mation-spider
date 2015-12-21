@@ -3,6 +3,7 @@ package main
 import (
 	"reflect"
 	"strconv"
+	"time"
 
 	"github.com/golang/glog"
 
@@ -28,35 +29,81 @@ type Job struct {
 	Urlmd5  string `redis:"urlmd5"`
 }
 
-func SaveJob(j Job) error {
-	id := getJobId(j.Urlmd5)
+func SaveJob(j Job) (string, error) {
+	id, err := getJobId(j.Urlmd5)
+	if err != nil {
+		return "", err
+	}
 
 	t := reflect.TypeOf(j)
 	v := reflect.ValueOf(&j).Elem()
 	for i := 0; i < v.NumField(); i++ {
 		key := "job:" + id + ":" + t.Field(i).Tag.Get("redis")
 		value := v.Field(i).Interface().(string)
-		client.Set(key, value, EXPIRE_TIME)
+		_, err := client.Set(key, value, EXPIRE_TIME).Result()
+		if err != nil {
+			return "", err
+		}
 	}
-	return nil
+	return id, nil
 }
 
-func getJobId(urlmd5 string) string {
-	val, err := client.Get("job:" + urlmd5 + ":id").Result()
+func SaveTopicJobList(topic string, jobid string) error {
+	id, err := getTopicId(topic)
+	if err != nil {
+		return err
+	}
+
+	now := time.Now().Unix()
+	key := "topic:" + id + ":joblist"
+	value := redis.Z{
+		Score:  float64(now),
+		Member: jobid,
+	}
+	_, err = client.ZAdd(key, value).Result()
+	return err
+}
+
+func SaveTopic(topic Topic) error {
+	id, err := getTopicId(topic.Name)
+	if err != nil {
+		return err
+	}
+	var key string
+	key = "topic:" + id + ":name"
+	_, err = client.Set(key, topic.Name, EXPIRE_TIME).Result()
+	if err != nil {
+		return err
+	}
+	key = "topic:" + id + ":words"
+	_, err = client.SAdd(key, topic.Words...).Result()
+	return err
+}
+
+func getTopicId(topic string) (string, error) {
+	return getAutoId("topic", topic)
+}
+
+func getJobId(urlmd5 string) (string, error) {
+	return getAutoId("job", urlmd5)
+}
+
+func getAutoId(table string, uniq string) (string, error) {
+	val, err := client.Get(table + ":" + uniq + ":id").Result()
 	if err == redis.Nil {
-		val, err := client.Incr("job:nextid").Result()
+		val, err := client.Incr(table + ":nextid").Result()
 		if err != nil {
-			panic(err)
+			return "", err
 		}
 		id := strconv.FormatInt(val, 10)
-		glog.V(3).Info(urlmd5, id)
-		client.Set("job:"+urlmd5+":id", id, EXPIRE_TIME)
-		return id
+		glog.V(3).Info(uniq, id)
+		client.Set(table+":"+uniq+":id", id, EXPIRE_TIME)
+		return id, nil
 	}
 	if err != nil {
-		panic(err)
+		return "", err
 	}
-	return val
+	return val, nil
 }
 
 //func ExampleClient() {

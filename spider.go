@@ -32,7 +32,12 @@ func spiderRunner(url string) {
 					item.GetUrl(),
 					igo.GetMd5String(item.GetUrl()),
 				}
-				SaveJob(j)
+				jobid, err := SaveJob(j)
+				if err != nil {
+					glog.V(2).Info(err)
+				} else {
+					Dispatch(item.GetTitle(), jobid)
+				}
 				//oid, err := Insert("feeds", item.GetTitle(), item.GetContent(), item.GetUrl())
 				//if err == nil {
 				//	glog.Info(item.GetTitle(), " ", item.GetUrl())
@@ -49,6 +54,9 @@ func spiderRunner(url string) {
 
 func main() {
 	flag.Parse()
+	for _, topic := range TOPICS {
+		SaveTopic(topic)
+	}
 	TopicDispatcherInit()
 	for i := 0; i < len(RssUrls); i++ {
 		url := RssUrls[i]
