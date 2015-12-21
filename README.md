@@ -1,16 +1,14 @@
 # Infor-You-Mation-Spider
 
+## Dependencies
+
++ redis server
+
 ## Usage
 
 ```
 make
 make run
-```
-
-## Create Mongo Index
-
-```
-mongo < mongo_index.js
 ```
 
 ## Contact
