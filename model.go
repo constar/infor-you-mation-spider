@@ -1,6 +1,7 @@
 package main
 
 import (
+	"reflect"
 	"strconv"
 
 	"github.com/golang/glog"
@@ -21,17 +22,22 @@ var (
 )
 
 type Job struct {
-	title   string
-	content string
-	url     string
-	urlmd5  string
+	Title   string `redis:"title"`
+	Content string `redis:"content"`
+	Url     string `redis:"url"`
+	Urlmd5  string `redis:"urlmd5"`
 }
 
 func SaveJob(j Job) error {
-	id := getJobId(j.urlmd5)
-	//client.Set("job:"+id+":title", j.title, EXPIRE_TIME)
-	glog.Info(id)
-	//client.Set("job" + "")
+	id := getJobId(j.Urlmd5)
+
+	t := reflect.TypeOf(j)
+	v := reflect.ValueOf(&j).Elem()
+	for i := 0; i < v.NumField(); i++ {
+		key := "job:" + id + ":" + t.Field(i).Tag.Get("redis")
+		value := v.Field(i).Interface().(string)
+		client.Set(key, value, EXPIRE_TIME)
+	}
 	return nil
 }
 
