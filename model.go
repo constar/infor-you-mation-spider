@@ -11,7 +11,8 @@ import (
 )
 
 const (
-	EXPIRE_TIME = 0
+	// 3 days
+	EXPIRE_TIME = 3 * 24 * 60 * 60
 )
 
 var (
