@@ -5,8 +5,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/golang/glog"
-	"github.com/yanyiwu/igo"
+	"github.com/constar/infor-you-mation-spider/Godeps/_workspace/src/github.com/golang/glog"
+	"github.com/constar/infor-you-mation-spider/Godeps/_workspace/src/github.com/yanyiwu/igo"
 )
 
 var sleepSeconds = flag.Int("sleep", 60, "sleep seconds")

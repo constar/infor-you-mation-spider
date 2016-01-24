@@ -5,9 +5,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/golang/glog"
+	"github.com/constar/infor-you-mation-spider/Godeps/_workspace/src/github.com/golang/glog"
 
-	"gopkg.in/redis.v3"
+	"github.com/constar/infor-you-mation-spider/Godeps/_workspace/src/gopkg.in/redis.v3"
 )
 
 const (

@@ -2,7 +2,7 @@ package main
 
 import (
 	"encoding/xml"
-	"github.com/golang/glog"
+	"github.com/constar/infor-you-mation-spider/Godeps/_workspace/src/github.com/golang/glog"
 	//"io/ioutil"
 )
 

@@ -4,8 +4,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/golang/glog"
-	"github.com/yanyiwu/igo"
+	"github.com/constar/infor-you-mation-spider/Godeps/_workspace/src/github.com/golang/glog"
+	"github.com/constar/infor-you-mation-spider/Godeps/_workspace/src/github.com/yanyiwu/igo"
 )
 
 var dispatcher *TopicDispatcher

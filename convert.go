@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/golang/glog"
-	"github.com/qiniu/iconv"
+	"github.com/constar/infor-you-mation-spider/Godeps/_workspace/src/github.com/golang/glog"
+	"github.com/constar/infor-you-mation-spider/Godeps/_workspace/src/github.com/qiniu/iconv"
 	"strings"
 	"sync"
 )

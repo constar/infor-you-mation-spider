@@ -1,0 +1,31 @@
+{
+	"ImportPath": "github.com/constar/infor-you-mation-spider",
+	"GoVersion": "go1.4",
+	"Packages": [
+		"./..."
+	],
+	"Deps": [
+		{
+			"ImportPath": "github.com/golang/glog",
+			"Rev": "d1c4472bf2efd3826f2b5bdcc02d8416798d678c"
+		},
+		{
+			"ImportPath": "github.com/qiniu/iconv",
+			"Comment": "v1.0.03",
+			"Rev": "172b3ad91d7973617ea6b6ed03d9fec080f8901d"
+		},
+		{
+			"ImportPath": "github.com/yanyiwu/igo",
+			"Rev": "0516329d2efcf915a17ec21f2409adf39066590f"
+		},
+		{
+			"ImportPath": "gopkg.in/bsm/ratelimit.v1",
+			"Rev": "7bdafe6faf484595d418bb980669a500cb45a592"
+		},
+		{
+			"ImportPath": "gopkg.in/redis.v3",
+			"Comment": "v3.2.23",
+			"Rev": "ba44d4d158d4f08b4271966798f81e1d1d9b3ba3"
+		}
+	]
+}
