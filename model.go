@@ -12,7 +12,7 @@ import (
 
 const (
 	// 3 days
-	EXPIRE_TIME = 3 * 24 * 60 * 60
+	EXPIRE_TIME = 3 * 24 * 60 * 60 * time.Second
 )
 
 var (
