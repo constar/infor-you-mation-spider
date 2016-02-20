@@ -9,6 +9,38 @@ import (
 	"github.com/constar/infor-you-mation-spider/Godeps/_workspace/src/github.com/yanyiwu/igo"
 )
 
+var BYR_RSS_URLS = [...]string{
+	"http://bbs.byr.cn/rss/board-ParttimeJob",
+	"http://bbs.byr.cn/rss/board-JobInfo",
+}
+
+var SMTH_RSS_URLS = [...]string{
+	"http://www.newsmth.net/nForum/rss/board-Career_Campus",
+	"http://www.newsmth.net/nForum/rss/board-Career_PHD",
+	"http://www.newsmth.net/nForum/rss/board-Career_Plaza",
+	"http://www.newsmth.net/nForum/rss/board-Career_Upgrade",
+	"http://www.newsmth.net/nForum/rss/board-ExecutiveSearch",
+}
+
+var TOPICS = []Topic{
+	{"Android", []string{"Android", "安卓"}},
+	{"大数据", []string{"大数据", "数据挖掘", "数据分析"}},
+	{"人工智能", []string{"人工智能", "机器学习", "自然语言处理"}},
+	{"设计", []string{"设计", "交互", "UI", "UE", "美工"}},
+	{"云计算", []string{"云计算", "分布式"}},
+	{"实习/兼职", []string{"实习", "兼职"}},
+	{"Web前端", []string{"前端", "h5", "html", "js", "javascript"}},
+	{"创业", []string{"创业"}},
+	{"产品", []string{"产品"}},
+	{"PHP", []string{"PHP"}},
+	{"iOS", []string{"iOS"}},
+	{"C++", []string{"C++", "cpp"}},
+	{"Java", []string{"Java"}},
+	{"Python", []string{"Python"}},
+	{"运营/市场", []string{"运营", "市场"}},
+	{"Golang", []string{"go"}},
+}
+
 var sleepSeconds = flag.Int("sleep", 60, "sleep seconds")
 var isForever = flag.Bool("forever", false, "run forever")
 
@@ -35,13 +67,6 @@ func Crawl(url string) {
 			} else {
 				Dispatch(item.GetTitle(), jobid)
 			}
-			//oid, err := Insert("feeds", item.GetTitle(), item.GetContent(), item.GetUrl())
-			//if err == nil {
-			//	glog.Info(item.GetTitle(), " ", item.GetUrl())
-			//	Dispatch(item.GetTitle(), oid)
-			//} else {
-			//	glog.V(2).Info(err)
-			//}
 		}
 	}
 }
@@ -65,8 +90,12 @@ func main() {
 		SaveTopic(topic)
 	}
 	TopicDispatcherInit()
-	for i := 0; i < len(RssUrls); i++ {
-		url := RssUrls[i]
+	for _, url := range BYR_RSS_URLS {
+		wg.Add(1)
+		go spiderRunner(url)
+		glog.Info(url)
+	}
+	for _, url := range SMTH_RSS_URLS {
 		wg.Add(1)
 		go spiderRunner(url)
 		glog.Info(url)
