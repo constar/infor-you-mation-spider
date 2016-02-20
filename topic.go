@@ -21,4 +21,5 @@ var TOPICS = []Topic{
 	{"Java", []string{"Java"}},
 	{"Python", []string{"Python"}},
 	{"运营/市场", []string{"运营", "市场"}},
+	{"Golang", []string{"go"}},
 }
