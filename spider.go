@@ -51,7 +51,7 @@ var isForever = flag.Bool("forever", false, "run forever")
 
 var wg sync.WaitGroup
 
-func Crawl(url string, parser parser.Parser) {
+func Crawl(source string, url string, parser parser.Parser) {
 	content := igo.HttpGet(url)
 	msgs := parser.Parse(content)
 	if msgs == nil {
@@ -64,6 +64,7 @@ func Crawl(url string, parser parser.Parser) {
 				item.Content,
 				item.Url,
 				igo.GetMd5String(item.Url),
+				source,
 			}
 			jobid, err := SaveJob(j)
 			if err != nil {
@@ -75,16 +76,16 @@ func Crawl(url string, parser parser.Parser) {
 	}
 }
 
-func spiderRunner(url string, parser parser.Parser) {
+func spiderRunner(source string, url string, parser parser.Parser) {
 	defer wg.Done()
 	if *isForever {
 		for {
-			Crawl(url, parser)
+			Crawl(source, url, parser)
 			glog.V(3).Info("time.Sleep ", *sleepSeconds, " seconds")
 			time.Sleep(time.Duration(*sleepSeconds) * time.Second)
 		}
 	} else {
-		Crawl(url, parser)
+		Crawl(source, url, parser)
 	}
 }
 
@@ -99,17 +100,17 @@ func main() {
 	TopicDispatcherInit()
 	for _, url := range BYR_RSS_URLS {
 		wg.Add(1)
-		go spiderRunner(url, byrparser)
+		go spiderRunner("byr", url, byrparser)
 		glog.Info(url)
 	}
 	for _, url := range SMTH_RSS_URLS {
 		wg.Add(1)
-		go spiderRunner(url, smthparser)
+		go spiderRunner("smth", url, smthparser)
 		glog.Info(url)
 	}
 	for _, url := range V2EX_RSS_URLS {
 		wg.Add(1)
-		go spiderRunner(url, v2exparser)
+		go spiderRunner("v2ex", url, v2exparser)
 		glog.Info(url)
 	}
 	wg.Wait()

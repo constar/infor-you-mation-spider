@@ -28,6 +28,7 @@ type Job struct {
 	Content string `redis:"content"`
 	Url     string `redis:"url"`
 	Urlmd5  string `redis:"urlmd5"`
+	Source  string `redis:"source"`
 }
 
 func SaveJob(j Job) (string, error) {
