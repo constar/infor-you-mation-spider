@@ -7,6 +7,7 @@ import (
 
 	"github.com/constar/infor-you-mation-spider/Godeps/_workspace/src/github.com/golang/glog"
 	"github.com/constar/infor-you-mation-spider/Godeps/_workspace/src/github.com/yanyiwu/igo"
+	"github.com/constar/infor-you-mation-spider/parser"
 )
 
 var BYR_RSS_URLS = [...]string{
@@ -46,58 +47,60 @@ var isForever = flag.Bool("forever", false, "run forever")
 
 var wg sync.WaitGroup
 
-func Crawl(url string) {
+func Crawl(url string, parser parser.Parser) {
 	content := igo.HttpGet(url)
 	content = convert(content)
-	msgs := Parse(content)
+	msgs := parser.Parse(content)
 	if msgs == nil {
 		glog.Error("Parse failed")
 	} else {
 		for _, item := range msgs {
 			glog.V(3).Info(item)
 			j := Job{
-				item.GetTitle(),
-				item.GetContent(),
-				item.GetUrl(),
-				igo.GetMd5String(item.GetUrl()),
+				item.Title,
+				item.Content,
+				item.Url,
+				igo.GetMd5String(item.Url),
 			}
 			jobid, err := SaveJob(j)
 			if err != nil {
 				glog.V(2).Info(err)
 			} else {
-				Dispatch(item.GetTitle(), jobid)
+				Dispatch(item.Title, jobid)
 			}
 		}
 	}
 }
 
-func spiderRunner(url string) {
+func spiderRunner(url string, parser parser.Parser) {
 	defer wg.Done()
 	if *isForever {
 		for {
-			Crawl(url)
+			Crawl(url, parser)
 			glog.V(3).Info("time.Sleep ", *sleepSeconds, " seconds")
 			time.Sleep(time.Duration(*sleepSeconds) * time.Second)
 		}
 	} else {
-		Crawl(url)
+		Crawl(url, parser)
 	}
 }
 
 func main() {
 	flag.Parse()
+	byrparser := parser.NewByrParser()
+	smthparser := parser.NewSmthParser()
 	for _, topic := range TOPICS {
 		SaveTopic(topic)
 	}
 	TopicDispatcherInit()
 	for _, url := range BYR_RSS_URLS {
 		wg.Add(1)
-		go spiderRunner(url)
+		go spiderRunner(url, byrparser)
 		glog.Info(url)
 	}
 	for _, url := range SMTH_RSS_URLS {
 		wg.Add(1)
-		go spiderRunner(url)
+		go spiderRunner(url, smthparser)
 		glog.Info(url)
 	}
 	wg.Wait()
