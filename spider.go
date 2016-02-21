@@ -23,6 +23,10 @@ var SMTH_RSS_URLS = [...]string{
 	"http://www.newsmth.net/nForum/rss/board-ExecutiveSearch",
 }
 
+var V2EX_RSS_URLS = [...]string{
+	"http://www.v2ex.com/feed/jobs.xml",
+}
+
 var TOPICS = []Topic{
 	{"Android", []string{"Android", "安卓"}},
 	{"大数据", []string{"大数据", "数据挖掘", "数据分析"}},
@@ -49,7 +53,6 @@ var wg sync.WaitGroup
 
 func Crawl(url string, parser parser.Parser) {
 	content := igo.HttpGet(url)
-	content = convert(content)
 	msgs := parser.Parse(content)
 	if msgs == nil {
 		glog.Error("Parse failed")
@@ -89,6 +92,7 @@ func main() {
 	flag.Parse()
 	byrparser := parser.NewByrParser()
 	smthparser := parser.NewSmthParser()
+	v2exparser := parser.NewV2exParser()
 	for _, topic := range TOPICS {
 		SaveTopic(topic)
 	}
@@ -101,6 +105,11 @@ func main() {
 	for _, url := range SMTH_RSS_URLS {
 		wg.Add(1)
 		go spiderRunner(url, smthparser)
+		glog.Info(url)
+	}
+	for _, url := range V2EX_RSS_URLS {
+		wg.Add(1)
+		go spiderRunner(url, v2exparser)
 		glog.Info(url)
 	}
 	wg.Wait()

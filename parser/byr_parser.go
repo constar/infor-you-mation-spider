@@ -38,10 +38,7 @@ func NewByrParser() *ByrParser {
 }
 
 func (this *ByrParser) Parse(content []byte) []Message {
-	if content == nil {
-		glog.Error("content is nil")
-		return nil
-	}
+	content = convert(content)
 	var rss ByrRss
 	err := xml.Unmarshal(content, &rss)
 	if err != nil {

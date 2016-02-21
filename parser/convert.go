@@ -1,10 +1,11 @@
-package main
+package parser
 
 import (
-	"github.com/constar/infor-you-mation-spider/Godeps/_workspace/src/github.com/golang/glog"
-	"github.com/constar/infor-you-mation-spider/Godeps/_workspace/src/github.com/qiniu/iconv"
 	"strings"
 	"sync"
+
+	"github.com/constar/infor-you-mation-spider/Godeps/_workspace/src/github.com/golang/glog"
+	"github.com/constar/infor-you-mation-spider/Godeps/_workspace/src/github.com/qiniu/iconv"
 )
 
 var ic iconv.Iconv
@@ -14,7 +15,7 @@ func init() {
 	var err error
 	ic, err = iconv.Open("utf-8", "gbk")
 	if err != nil {
-		glog.Fatal("iconv.Open failed!")
+		glog.Fatal(err)
 	}
 }
 
