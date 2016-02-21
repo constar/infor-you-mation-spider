@@ -8,7 +8,7 @@ before_install:
 script:
   - go build ./...
   - go test ./...
-  - goveralls -service=travis-ci
+    #- goveralls -service=travis-ci
 notifications:
   recipients:
     - i@yanyiwu.com
