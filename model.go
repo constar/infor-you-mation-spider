@@ -13,6 +13,7 @@ import (
 const (
 	// 3 days
 	EXPIRE_TIME = 3 * 24 * 60 * 60 * time.Second
+	NOT_EXPIRE  = 0
 )
 
 var (
@@ -99,7 +100,7 @@ func getAutoId(table string, uniq string) (string, error) {
 		}
 		id := strconv.FormatInt(val, 10)
 		glog.V(3).Info(uniq, id)
-		client.Set(table+":"+uniq+":id", id, EXPIRE_TIME)
+		client.Set(table+":"+uniq+":id", id, NOT_EXPIRE)
 		return id, nil
 	}
 	if err != nil {
