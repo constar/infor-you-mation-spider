@@ -50,7 +50,7 @@ func TestV2exParser(t *testing.T) {
 		t.Fatal(len(msgs))
 	}
 
-	if msgs[0].Url != "https://www.v2ex.com/t/257977#reply5" {
+	if msgs[0].Url != "https://www.v2ex.com/t/257977" {
 		t.Fatal(msgs[0].Url)
 	}
 	if msgs[0].Title != "title1" {
