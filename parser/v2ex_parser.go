@@ -2,6 +2,7 @@ package parser
 
 import (
 	"encoding/xml"
+	"strings"
 
 	"github.com/constar/infor-you-mation-spider/Godeps/_workspace/src/github.com/golang/glog"
 )
@@ -37,10 +38,16 @@ func (this *V2exParser) Parse(content []byte) []Message {
 	size := len(rss.Items)
 	msgs := make([]Message, 0, size)
 	for i := 0; i < size; i++ {
+		segs := strings.Split(rss.Items[i].Link.Url, "#")
+		if len(segs) == 0 {
+			glog.Error(rss.Items[i].Link.Url, "illegal")
+			continue
+		}
+		url := segs[0]
 		msg := Message{
 			Title:   rss.Items[i].Title,
 			Content: rss.Items[i].Content,
-			Url:     rss.Items[i].Link.Url,
+			Url:     url,
 		}
 		msgs = append(msgs, msg)
 	}
