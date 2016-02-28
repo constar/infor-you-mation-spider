@@ -1,5 +1,5 @@
 all:
-	go build
+	go build -v
 run: 
 	./infor-you-mation-spider  -alsologtostderr=true
 debug:

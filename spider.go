@@ -44,6 +44,13 @@ var TOPICS = []Topic{
 	{"Python", []string{"Python"}},
 	{"运营/市场", []string{"运营", "市场"}},
 	{"Golang", []string{"go"}},
+	{"BAT", []string{"BAT"}},
+	{"百度", []string{"百度"}},
+	{"腾讯", []string{"腾讯"}},
+	{"阿里", []string{"阿里"}},
+	{"美团", []string{"美团"}},
+	{"滴滴", []string{"滴滴", "嘀嘀打车"}},
+	{"小米", []string{"小米"}},
 }
 
 var sleepSeconds = flag.Int("sleep", 60, "sleep seconds")
@@ -91,6 +98,7 @@ func spiderRunner(source string, url string, parser parser.Parser) {
 
 func main() {
 	flag.Parse()
+	PurgeAllTopics()
 	byrparser := parser.NewByrParser()
 	smthparser := parser.NewSmthParser()
 	v2exparser := parser.NewV2exParser()

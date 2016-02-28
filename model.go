@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"reflect"
 	"strconv"
 	"time"
@@ -11,8 +12,8 @@ import (
 )
 
 const (
-	// 3 days
-	EXPIRE_TIME = 3 * 24 * 60 * 60 * time.Second
+	// 24 hours
+	EXPIRE_TIME = 24 * 60 * 60 * time.Second
 	NOT_EXPIRE  = 0
 )
 
@@ -54,6 +55,7 @@ func SaveJob(j Job) (string, error) {
 func SaveTopicJobList(topic string, jobid string) error {
 	id, err := getTopicId(topic)
 	if err != nil {
+		glog.Error(err)
 		return err
 	}
 
@@ -67,6 +69,37 @@ func SaveTopicJobList(topic string, jobid string) error {
 	return err
 }
 
+func PurgeAllTopics() error {
+	fmt.Println("xxxx")
+	maxid, err := client.Get("topic:nextid").Result()
+	if err != nil {
+		glog.Error(err)
+		return err
+	}
+	max, err := strconv.Atoi(maxid)
+	if err != nil {
+		glog.Error(err)
+		return err
+	}
+	for i := 1; i <= max; i++ {
+		if err := PurgeTopicJobList(strconv.Itoa(i)); err != nil {
+			glog.Error(err)
+			return err
+		}
+	}
+	return nil
+}
+
+func PurgeTopicJobList(topicid string) error {
+	key := "topic:" + topicid + ":joblist"
+	old := time.Now().Add(-EXPIRE_TIME).Unix()
+	min := "0"
+	max := strconv.Itoa(int(old))
+	fmt.Println(min, max)
+	_, err := client.ZRemRangeByScore(key, min, max).Result()
+	return err
+}
+
 func SaveTopic(topic Topic) error {
 	id, err := getTopicId(topic.Name)
 	if err != nil {
@@ -74,7 +107,7 @@ func SaveTopic(topic Topic) error {
 	}
 	var key string
 	key = "topic:" + id + ":name"
-	_, err = client.Set(key, topic.Name, EXPIRE_TIME).Result()
+	_, err = client.Set(key, topic.Name, NOT_EXPIRE).Result()
 	if err != nil {
 		return err
 	}
@@ -108,30 +141,3 @@ func getAutoId(table string, uniq string) (string, error) {
 	}
 	return val, nil
 }
-
-//func ExampleClient() {
-//pong, err := client.Ping().Result()
-//fmt.Println(pong, err)
-// Output: PONG <nil>
-//err = client.Set("key", "value", 0).Err()
-//if err != nil {
-//	panic(err)
-//}
-
-//val, err := client.Get("key").Result()
-//if err != nil {
-//	panic(err)
-//}
-//fmt.Println("key", val)
-
-//val2, err := client.Get("key2").Result()
-//if err == redis.Nil {
-//	fmt.Println("key2 does not exists")
-//} else if err != nil {
-//	panic(err)
-//} else {
-//	fmt.Println("key2", val2)
-//}
-// Output: key value
-// key2 does not exists
-//}

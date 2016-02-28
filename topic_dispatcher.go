@@ -16,9 +16,9 @@ func TopicDispatcherInit() {
 		panic("NewTopicDispatcher failed")
 	}
 	for i := 0; i < len(TOPICS); i++ {
-		glog.Info("init: topic ", TOPICS[i].Name)
+		//glog.Info("init: topic ", TOPICS[i].Name)
 		for j := 0; j < len(TOPICS[i].Words); j++ {
-			glog.Info("init: word ", TOPICS[i].Words[j])
+			//glog.Info("init: word ", TOPICS[i].Words[j])
 			k := TOPICS[i].Words[j]
 			dispatcher.Insert(k, TOPICS[i])
 		}
@@ -44,7 +44,7 @@ func (kw *TopicDispatcher) Insert(word string, topic Topic) {
 	word = strings.ToLower(word)
 	kw.lock.Lock()
 	defer kw.lock.Unlock()
-	glog.Info("trie insert word: ", word)
+	//glog.Info("trie insert word: ", word)
 	if err := kw.trie.Insert(word, topic); err != nil {
 		glog.Error(err)
 	}
