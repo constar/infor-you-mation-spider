@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"reflect"
 	"strconv"
 	"time"
@@ -70,7 +69,6 @@ func SaveTopicJobList(topic string, jobid string) error {
 }
 
 func PurgeAllTopics() error {
-	fmt.Println("xxxx")
 	maxid, err := client.Get("topic:nextid").Result()
 	if err != nil {
 		glog.Error(err)
@@ -95,7 +93,6 @@ func PurgeTopicJobList(topicid string) error {
 	old := time.Now().Add(-EXPIRE_TIME).Unix()
 	min := "0"
 	max := strconv.Itoa(int(old))
-	fmt.Println(min, max)
 	_, err := client.ZRemRangeByScore(key, min, max).Result()
 	return err
 }
