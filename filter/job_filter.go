@@ -10,6 +10,11 @@ var WORDS = [...]string{
 	"招聘",
 	"诚聘",
 	"内推",
+	"10K",
+	"15K",
+	"20K",
+	"30K",
+	"40K",
 }
 
 type JobFilter struct {

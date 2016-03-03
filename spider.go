@@ -7,24 +7,28 @@ import (
 
 	"github.com/constar/infor-you-mation-spider/Godeps/_workspace/src/github.com/golang/glog"
 	"github.com/constar/infor-you-mation-spider/Godeps/_workspace/src/github.com/yanyiwu/igo"
+	"github.com/constar/infor-you-mation-spider/filter"
 	"github.com/constar/infor-you-mation-spider/parser"
 )
 
-var BYR_RSS_URLS = [...]string{
-	"http://bbs.byr.cn/rss/board-ParttimeJob",
-	"http://bbs.byr.cn/rss/board-JobInfo",
+type Task struct {
+	Name   string
+	Url    string
+	Parser parser.Parser
+	Filter *filter.JobFilter
 }
 
-var SMTH_RSS_URLS = [...]string{
-	"http://www.newsmth.net/nForum/rss/board-Career_Campus",
-	"http://www.newsmth.net/nForum/rss/board-Career_PHD",
-	"http://www.newsmth.net/nForum/rss/board-Career_Plaza",
-	"http://www.newsmth.net/nForum/rss/board-Career_Upgrade",
-	"http://www.newsmth.net/nForum/rss/board-ExecutiveSearch",
-}
-
-var V2EX_RSS_URLS = [...]string{
-	"http://www.v2ex.com/feed/jobs.xml",
+var TASKS = [...]Task{
+	{"byr", "http://bbs.byr.cn/rss/board-ParttimeJob", parser.NewByrParser(), nil},
+	{"byr", "http://bbs.byr.cn/rss/board-JobInfo", parser.NewByrParser(), nil},
+	{"byr", "http://bbs.byr.cn/rss/board-Job", parser.NewByrParser(), filter.NewJobFilter()},
+	{"smth", "http://www.newsmth.net/nForum/rss/board-Career_Campus", parser.NewSmthParser(), nil},
+	{"smth", "http://www.newsmth.net/nForum/rss/board-Career_PHD", parser.NewSmthParser(), nil},
+	{"smth", "http://www.newsmth.net/nForum/rss/board-Career_Plaza", parser.NewSmthParser(), nil},
+	{"smth", "http://www.newsmth.net/nForum/rss/board-Career_Upgrade", parser.NewSmthParser(), nil},
+	{"smth", "http://www.newsmth.net/nForum/rss/board-ExecutiveSearch", parser.NewSmthParser(), nil},
+	{"v2ex", "http://www.v2ex.com/feed/jobs.xml", parser.NewV2exParser(), nil},
+	{"cnode", "https://cnodejs.org/rss", parser.NewCNodeParser(), filter.NewJobFilter()},
 }
 
 var TOPICS = []Topic{
@@ -65,9 +69,12 @@ var isForever = flag.Bool("forever", false, "run forever")
 
 var wg sync.WaitGroup
 
-func Crawl(source string, url string, parser parser.Parser) {
-	content := igo.HttpGet(url)
-	msgs := parser.Parse(content)
+func Crawl(task Task) {
+	content := igo.HttpGet(task.Url)
+	msgs := task.Parser.Parse(content)
+	if task.Filter != nil {
+		msgs = task.Filter.Filter(msgs)
+	}
 	if msgs == nil {
 		glog.Error("Parse failed")
 	} else {
@@ -78,7 +85,7 @@ func Crawl(source string, url string, parser parser.Parser) {
 				item.Content,
 				item.Url,
 				igo.GetMd5String(item.Url),
-				source,
+				task.Name,
 			}
 			jobid, err := SaveJob(j)
 			if err != nil {
@@ -90,43 +97,29 @@ func Crawl(source string, url string, parser parser.Parser) {
 	}
 }
 
-func spiderRunner(source string, url string, parser parser.Parser) {
+func spiderRunner(task Task) {
 	defer wg.Done()
 	if *isForever {
 		for {
-			Crawl(source, url, parser)
+			Crawl(task)
 			glog.V(3).Info("time.Sleep ", *sleepSeconds, " seconds")
 			time.Sleep(time.Duration(*sleepSeconds) * time.Second)
 		}
 	} else {
-		Crawl(source, url, parser)
+		Crawl(task)
 	}
 }
 
 func main() {
 	flag.Parse()
 	PurgeAllTopics()
-	byrparser := parser.NewByrParser()
-	smthparser := parser.NewSmthParser()
-	v2exparser := parser.NewV2exParser()
 	for _, topic := range TOPICS {
 		SaveTopic(topic)
 	}
 	TopicDispatcherInit()
-	for _, url := range BYR_RSS_URLS {
+	for _, task := range TASKS {
 		wg.Add(1)
-		go spiderRunner("byr", url, byrparser)
-		glog.Info(url)
-	}
-	for _, url := range SMTH_RSS_URLS {
-		wg.Add(1)
-		go spiderRunner("smth", url, smthparser)
-		glog.Info(url)
-	}
-	for _, url := range V2EX_RSS_URLS {
-		wg.Add(1)
-		go spiderRunner("v2ex", url, v2exparser)
-		glog.Info(url)
+		go spiderRunner(task)
 	}
 	wg.Wait()
 }
