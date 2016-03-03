@@ -66,6 +66,7 @@ var TOPICS = []Topic{
 
 var sleepSeconds = flag.Int("sleep", 60, "sleep seconds")
 var isForever = flag.Bool("forever", false, "run forever")
+var expireHours = flag.Int("expire", 24, "hours for redis expire")
 
 var wg sync.WaitGroup
 

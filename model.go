@@ -11,9 +11,7 @@ import (
 )
 
 const (
-	// 24 hours
-	EXPIRE_TIME = 24 * 60 * 60 * time.Second
-	NOT_EXPIRE  = 0
+	NOT_EXPIRE = 0
 )
 
 var (
@@ -43,7 +41,7 @@ func SaveJob(j Job) (string, error) {
 	for i := 0; i < v.NumField(); i++ {
 		key := "job:" + id + ":" + t.Field(i).Tag.Get("redis")
 		value := v.Field(i).Interface().(string)
-		_, err := client.Set(key, value, EXPIRE_TIME).Result()
+		_, err := client.Set(key, value, (time.Duration)(*expireHours)*time.Hour).Result()
 		if err != nil {
 			return "", err
 		}
@@ -90,7 +88,7 @@ func PurgeAllTopics() error {
 
 func PurgeTopicJobList(topicid string) error {
 	key := "topic:" + topicid + ":joblist"
-	old := time.Now().Add(-EXPIRE_TIME).Unix()
+	old := time.Now().Add(-1 * (time.Duration)(*expireHours) * time.Hour).Unix()
 	min := "0"
 	max := strconv.Itoa(int(old))
 	_, err := client.ZRemRangeByScore(key, min, max).Result()
