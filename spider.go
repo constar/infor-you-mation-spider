@@ -51,6 +51,13 @@ var TOPICS = []Topic{
 	{"美团", []string{"美团"}},
 	{"滴滴", []string{"滴滴", "嘀嘀打车"}},
 	{"小米", []string{"小米"}},
+	{"校招", []string{"校招"}},
+	{"社招", []string{"社招"}},
+	{"内推", []string{"内推"}},
+	{"北京", []string{"北京", "帝都"}},
+	{"上海", []string{"上海"}},
+	{"苏杭", []string{"杭州", "苏州"}},
+	{"广深", []string{"广州", "深圳"}},
 }
 
 var sleepSeconds = flag.Int("sleep", 60, "sleep seconds")
